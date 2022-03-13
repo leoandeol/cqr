@@ -1,24 +1,22 @@
+import six
+import sys
 
+sys.modules["sklearn.externals.six"] = six
 from cqr import helper
 from skgarden import RandomForestQuantileRegressor
 from sklearn.model_selection import train_test_split
 
 
-def CV_quntiles_rf(params,
-                   X,
-                   y,
-                   target_coverage,
-                   grid_q,
-                   test_ratio,
-                   random_state,
-                   coverage_factor=0.9):
-    """ Tune the low and high quantile level parameters of quantile random
+def CV_quntiles_rf(
+    params, X, y, target_coverage, grid_q, test_ratio, random_state, coverage_factor=0.9
+):
+    """Tune the low and high quantile level parameters of quantile random
         forests method, using cross-validation
-    
+
     Parameters
     ----------
     params : dictionary of parameters
-            params["random_state"] : integer, seed for splitting the data 
+            params["random_state"] : integer, seed for splitting the data
                                      in cross-validation. Also used as the
                                      seed in quantile random forest (QRF)
             params["min_samples_leaf"] : integer, parameter of QRF
@@ -37,26 +35,30 @@ def CV_quntiles_rf(params,
                       ask for prediction band with smaller average coverage,
                       equal to coverage_factor*(q_high - q_low) to avoid too
                       conservative estimation of the prediction band
-    
+
     Returns
     -------
     best_q : numpy array of low and high quantile levels (length 2)
-    
+
     References
     ----------
     .. [1]  Meinshausen, Nicolai. "Quantile regression forests."
             Journal of Machine Learning Research 7.Jun (2006): 983-999.
-    
+
     """
-    target_coverage = coverage_factor*target_coverage
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_ratio,random_state=random_state)
+    target_coverage = coverage_factor * target_coverage
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_ratio, random_state=random_state
+    )
     best_avg_length = 1e10
     best_q = grid_q[0]
 
-    rf = RandomForestQuantileRegressor(random_state=params["random_state"],
-                                       min_samples_leaf=params["min_samples_leaf"],
-                                       n_estimators=params["n_estimators"],
-                                       max_features=params["max_features"])
+    rf = RandomForestQuantileRegressor(
+        random_state=params["random_state"],
+        min_samples_leaf=params["min_samples_leaf"],
+        n_estimators=params["n_estimators"],
+        max_features=params["max_features"],
+    )
     rf.fit(X_train, y_train)
 
     for q in grid_q:
