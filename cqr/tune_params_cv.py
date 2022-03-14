@@ -3,8 +3,13 @@ import sys
 
 sys.modules["sklearn.externals.six"] = six
 from cqr import helper
-from skgarden import RandomForestQuantileRegressor
+
+# from skgarden import RandomForestQuantileRegressor
 from sklearn.model_selection import train_test_split
+
+
+class RandomForestQuantileRegressor:
+    pass
 
 
 def CV_quntiles_rf(
